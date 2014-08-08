@@ -1,7 +1,7 @@
 {
   "name": "skinny-mongo",
-  "version": "0.0.3",
-  "description": "This module is a thing wrapper around mongodb native driver that allows you to easily derive basic collection operations and share a pooled connection in a Node application.",
+  "version": "0.0.4",
+  "description": "This module is a thin wrapper around mongodb native driver that allows you to easily derive basic collection operations and share a pooled connection in a Node application.",
   "main": "index.js",
   "scripts": {
     "test": "mocha"

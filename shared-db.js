@@ -1,24 +1,37 @@
 var mongo    = require('mongodb')
 var MongoClient = mongo.MongoClient, Server = mongo.Server
-var sharedDb    = null;
 
-exports.open = function(mongoUrl, done) {
+var SharedDb = function() {
+  this.url = null
+  this.sharedDb = null
+  return this
+}
+
+SharedDb.prototype.init = function(url, done) {
+  this.url = url
+  this.open(done)
+}
+SharedDb.prototype.open = function(done) {
+  var self = this;
+
   if (typeof done == "undefined")
     done = function(err,db) { if (err) console.log(err) } //empty placeholder
 
-  if (!sharedDb) {
-    MongoClient.connect(mongoUrl, function(err, db) {
+  if (!self.sharedDb) {
+    MongoClient.connect(this.url, function(err, db) {
       if (err)
         return done(err)
 
-      sharedDb = db;
-      return done(null,sharedDb)
+      self.sharedDb = db;
+      return done(null,self.sharedDb)
     })
   }
   else
-    done(null,sharedDb)
+    done(null,self.sharedDb)
 }
-exports.close = function() {
-  if (sharedDb)
-    sharedDb.close();
+SharedDb.prototype.close = function() {
+  if (this.sharedDb)
+    this.sharedDb.close();
 }
+
+module.exports = new SharedDb

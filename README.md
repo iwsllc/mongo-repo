@@ -36,9 +36,11 @@ Extend the base collection in your own collection module
 
 ##Using collections
 
-    //call once when bootstrapping your app. This connection will get re-used with every call from within the collection
+    //call once when bootstrapping your app. This connection will get
+    //re-used with every call from within the collection
     var shared_db = require("skinny-mongo").db
-    shared_db.open("mongodb://localhost:27017/my_collection", function(err) { console.log(err) })
+    shared_db.open("mongodb://localhost:27017/my_collection",
+      function(err) { console.log(err) })
 
     //create collection instance
     var people = require("./people")

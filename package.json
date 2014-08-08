@@ -1,0 +1,33 @@
+{
+  "name": "skinny-mongo",
+  "version": "0.0.1",
+  "description": "This module is a thing wrapper around mongodb native driver that allows you to easily derive basic collection operations and share a pooled connection in a Node application.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:IWSLLC/skinny-mongo.git"
+  },
+  "keywords": [
+    "mongodb",
+    "helper",
+    "collection",
+    "shared",
+    "pool"
+  ],
+  "author": "Nathan Bridgewater",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/IWSLLC/skinny-mongo/issues"
+  },
+  "homepage": "https://github.com/IWSLLC/skinny-mongo",
+  "devDependencies": {
+    "mocha": "^1.21.4"
+  },
+  "dependencies": {
+    "lodash": "^2.4.1",
+    "mongodb": "^1.4.8"
+  }
+}

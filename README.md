@@ -7,8 +7,8 @@ It's meant to allow you to extend other native hooks you commonly use.
 ##Get Started
 Extend the base collection in your own collection module
 
-    var util        = require('util')
-    var baseRepo    = require('skinny-mongo').collection
+    var util           = require('util')
+    var baseCollection = require('skinny-mongo').collection
 
     //sample record; will be used as a baseline for all find operations.
     var record = function() {
@@ -25,7 +25,7 @@ Extend the base collection in your own collection module
       this.record = record
       return this
     }
-    util.inherits(repo, baseRepo)
+    util.inherits(collection, baseCollection)
 
     //add more collection prototypes here like helper queries.
     collection.prototype.findByEmail = function(email,done) {
@@ -36,8 +36,9 @@ Extend the base collection in your own collection module
 
 ##Using collections
 
-    //call once when bootstrapping your app. This connection will get re-used with every call.
-    var db = require("skinny-mongo").db
+    //call once when bootstrapping your app. This connection will get re-used with every call from within the collection
+    var shared_db = require("skinny-mongo").db
+    shared_db.open("mongodb://localhost:27017/my_collection", function(err) { console.log(err) })
 
     //create collection instance
     var people = require("./people")

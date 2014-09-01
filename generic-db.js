@@ -51,6 +51,15 @@ genericDb.prototype.find = function(query, done) {
     })
   })
 }
+genericDb.prototype.findCursor = function(query, options, done) {
+  var self = this
+  sharedMongo.open(function(err,db) {
+    if (err) return done(err)
+
+    var collection = db.collection(self.collectionName)
+    done(null, collection.find(query, options))
+  })
+}
 
 genericDb.prototype.findOne = function(query, done) {
   var self = this
@@ -74,8 +83,8 @@ genericDb.prototype.insert = function(data, done) {
   })
 }
 
-genericDb.prototype.upsert = function(data, done) {
-  this.update({_id : data._id}, data, {upsert : true}, done)
+genericDb.prototype.upsert = function(query, data, done) {
+  this.update(query, data, {upsert : true}, done)
 }
 
 genericDb.prototype.findAndModify = function(query, sort, update, options, done) {

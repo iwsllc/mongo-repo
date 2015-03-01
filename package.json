@@ -26,9 +26,11 @@
   "devDependencies": {
     "coffee-script": "^1.9.1",
     "mocha": "^2.1.0",
-    "should": "^5.0.1"
+    "should": "^5.0.1",
+    "sinon": "^1.12.2"
   },
   "dependencies": {
+    "async": "^0.9.0",
     "lodash": "^2.4.1",
     "mongodb": "^1.4.8"
   }

@@ -39,7 +39,7 @@ genericDb.prototype.find = function(query, done) {
       if (err) return done(err)
       if (!docs || !docs.length) return done(null, [])
       var rdocs = []
-      _.forEach(docs,function(doc) {rdocs.push(_.merge(self.new(),doc))})
+      _.forEach(docs,function(doc) {rdocs.push(self.new(doc))})
       done(null, rdocs)
     })
   })

@@ -1,5 +1,5 @@
 var util        = require('util')
-var baseRepo    = require('../generic-db')
+var base_collection    = require('../generic-db')
 
 //sample record; will be used as a baseline for all find operations.
 var record = function() {
@@ -19,7 +19,7 @@ var collection = function() {
   this.record = record
   return this
 }
-util.inherits(repo, baseRepo)
+util.inherits(collection, base_collection)
 
 
 //sample extension on the collection

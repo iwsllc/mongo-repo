@@ -6,26 +6,19 @@ var _           = require("lodash")
 var genericDb = function() {}
 
 genericDb.prototype.collectionName = ''
-genericDb.prototype.record = new function(){} //default
+genericDb.prototype.record = function(defaults) {
+  if (defaults)
+    _.merge(this,defaults)
+  return this
+}
 
 genericDb.prototype.new = function(defaults) {
-  var n = new this.record()
-  if (defaults)
-    _.merge(n,defaults)
-  return n
+  return new this.record(defaults)
 }
 
 genericDb.prototype.merge = function(err,doc,done) {
   if (err) return done(err)
-  done(null, this.mergeSync(doc))
-}
-genericDb.prototype.mergeSync = function(doc) {
-  var result = doc
-  if (doc) {
-    result = this.new()
-    _.merge(result,doc)
-  }
-  return result
+  done(null, this.new(doc))
 }
 
 genericDb.prototype.findById = function(id, done) {

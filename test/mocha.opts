@@ -1,0 +1,5 @@
+-R spec
+-u bdd
+--recursive
+--colors
+--compilers coffee:coffee-script/register

@@ -1,6 +1,6 @@
 {
   "name": "mongo-repo",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "This module is a thin wrapper around mongodb native driver that allows you to easily derive basic collection operations and share a pooled connection in a Node application.",
   "main": "index.js",
   "scripts": {
@@ -24,7 +24,9 @@
   },
   "homepage": "https://github.com/IWSLLC/skinny-mongo",
   "devDependencies": {
-    "mocha": "^1.21.4"
+    "coffee-script": "^1.9.1",
+    "mocha": "^2.1.0",
+    "should": "^5.0.1"
   },
   "dependencies": {
     "lodash": "^2.4.1",

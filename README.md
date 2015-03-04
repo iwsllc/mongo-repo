@@ -1,4 +1,6 @@
 #Simple MongoDb Wrapper
+![Build status](https://travis-ci.org/IWSLLC/mongo-repo.svg?branch=master)
+
 
 I use this utility for some of my own projects. It's a lightweight wrapper for the native mongodb NodeJs driver. The main advantage is the re-use of the common document definition. The find results will create new instances of the existing prototype and then merge the data into the instance.
 

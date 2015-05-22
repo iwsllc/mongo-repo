@@ -18,6 +18,7 @@ genericDb.prototype.new = function(defaults) {
 
 genericDb.prototype.merge = function(err,doc,done) {
   if (err) return done(err)
+  if (!doc) return done()
   done(null, this.new(doc))
 }
 

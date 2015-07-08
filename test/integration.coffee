@@ -3,7 +3,7 @@ shared = require "../shared-db"
 models = require "./test-model"
 async  = require "async"
 
-describe.skip "Integration tests", ->
+describe "Integration tests", ->
   describe "findOne; model init", ->
     describe "When finding matching doc", ->
       before (done) ->

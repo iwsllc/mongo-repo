@@ -18,7 +18,7 @@
     "pool"
   ],
   "author": "Nathan Bridgewater",
-  "license": "BSD",
+  "license": "BSD-3-Clause",
   "bugs": {
     "url": "https://github.com/IWSLLC/skinny-mongo/issues"
   },

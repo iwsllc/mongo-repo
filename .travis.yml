@@ -1,7 +1,11 @@
 language: node_js
 node_js:
-  - "0.10"
+- '0.10'
 script: "mocha"
 cache:
   directories:
     - node_modules
+notifications:
+  email : false
+services:
+  - mongodb

@@ -9,3 +9,4 @@ notifications:
   email : false
 services:
   - mongodb
+sudo: false

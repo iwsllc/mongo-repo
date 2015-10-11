@@ -47,6 +47,11 @@ genericDb.prototype.find = function(query, done) {
 }
 genericDb.prototype.findCursor = function(query, options, done) {
   var self = this
+  if (typeof(options) === 'function')
+  {
+    done = options
+    options = {}
+  }
   sharedMongo.open(function(err,db) {
     if (err) return done(err)
 

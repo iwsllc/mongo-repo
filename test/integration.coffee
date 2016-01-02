@@ -4,6 +4,25 @@ models = require "./test-model"
 async  = require "async"
 
 describe "Integration tests", ->
+  describe "insert", ->
+    before (done) ->
+      #native reset
+      shared.open (err, db) =>
+        done err if err?
+        c = db.collection("students")
+        @collection = new models.collection()
+        async.series [
+          (cb) -> c.remove {}, cb
+          (cb) => @collection.insert {name: "test3"}, (err, result, driver_result) =>
+            @result = result
+            @driver_result = driver_result
+            cb err
+        ], done
+    it "should return the inserted doc", -> @result.name.should.equal "test3"
+    it "should return the inserted doc with an _id", -> should.exist @result._id
+    it "should return the driver result", -> should.exist @driver_result
+    it "should return the driver result, result", -> @driver_result.result.ok.should.equal 1
+
   describe "findOne; model init", ->
     describe "When finding matching doc", ->
       before (done) ->

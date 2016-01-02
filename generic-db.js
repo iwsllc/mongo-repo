@@ -76,8 +76,8 @@ genericDb.prototype.insert = function(data, done) {
     if (err) return done(err)
 
     var collection = db.collection(self.collectionName);
-    collection.insert(data, function(err, records) {
-      done(err,records && records.length ? records[0] : null);
+    collection.insert(data, function(err, result) {
+      done(err,result && result.ops && result.ops.length ? result.ops[0] : null, result);
     })
   })
 }

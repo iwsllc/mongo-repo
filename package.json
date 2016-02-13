@@ -1,6 +1,6 @@
 {
   "name": "mongo-repo",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "This module is a thin wrapper around mongodb native driver that allows you to easily derive basic collection operations and share a pooled connection in a Node application.",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:IWSLLC/skinny-mongo.git"
+    "url": "git@github.com:IWSLLC/mongo-repo.git"
   },
   "keywords": [
     "mongodb",
@@ -23,9 +23,9 @@
   "author": "Nathan Bridgewater",
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/IWSLLC/skinny-mongo/issues"
+    "url": "https://github.com/IWSLLC/mongo-repo/issues"
   },
-  "homepage": "https://github.com/IWSLLC/skinny-mongo",
+  "homepage": "https://github.com/IWSLLC/mongo-repo",
   "devDependencies": {
     "coffee-script": "^1.10.0",
     "mocha": "^2.3.4",

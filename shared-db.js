@@ -1,5 +1,5 @@
 var mongo    = require('mongodb')
-var MongoClient = mongo.MongoClient, Server = mongo.Server
+var MongoClient = mongo.MongoClient
 
 var shared = function() {
   this.url = null
@@ -14,7 +14,7 @@ shared.prototype.init = function(url, done) {
 shared.prototype.open = function(done) {
   var self = this;
 
-  if (typeof done == "undefined")
+  if (typeof done === "undefined")
     done = function(err) { if (err) throw err } //empty placeholder
 
   if (!self.shared) {

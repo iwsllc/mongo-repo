@@ -23,6 +23,26 @@ describe "Integration tests", ->
     it "should return the driver result", -> should.exist @driver_result
     it "should return the driver result, result", -> @driver_result.result.ok.should.equal 1
 
+  describe "removeById", ->
+    before (done) ->
+      #native reset
+      shared.open (err, db) =>
+        done err if err?
+        c = db.collection("students")
+        @collection = new models.collection()
+        async.series [
+          (cb) -> c.remove {}, cb
+          (cb) => @collection.insert {name: "test3"}, (err, result, driver_result) =>
+            @result = result
+            cb err
+          (cb) => @collection.removeById @result._id.toString(), (err, driver_result) =>
+            @driver_result = driver_result
+            cb err
+        ], done
+    it "should return the driver result", -> should.exist @driver_result
+    it "should return the driver result, result", -> @driver_result.result.ok.should.equal 1
+    it "should return the driver result, affected 1", -> @driver_result.result.n.should.equal 1
+
   describe "findOne; model init", ->
     describe "When finding matching doc", ->
       before (done) ->

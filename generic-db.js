@@ -111,6 +111,9 @@ genericDb.prototype.update = function(query, setQuery, options, done) {
 
 genericDb.prototype.removeById = function(id, done) {
   var self = this
+  if (typeof(id) === 'string') {
+    id = mongodb.ObjectID(id)
+  }
   sharedMongo.open(function(err,db) {
     if (err) return done(err)
 

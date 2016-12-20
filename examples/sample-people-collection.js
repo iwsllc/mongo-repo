@@ -1,30 +1,37 @@
 var util        = require('util')
-var base_collection    = require('../generic-db')
-
-//sample record; will be used as a baseline for all find operations.
-var record = function() {
-  this._id   = null
-  this.name  = null
-  this.email = null
-  return this
-}
-
-//  prototypes defined on record will carry through to the doc results
-//  of the find operations
-record.prototype.whatsMyName = function() { console.log("My name is " + this.name) }
+var async       = require('async')
+var baseRepo    = require('../index').collection
+var sharedMongo = require('../index').db
+var model       = require("./model")
 
 //Setting up collection definition
-var collection = function() {
+var repo = function() {
+  baseRepo.call(this)
   this.collectionName = 'people'
-  this.record = record
+  this.record = model
   return this
 }
-util.inherits(collection, base_collection)
+util.inherits(repo, baseRepo)
 
 
 //sample extension on the collection
-collection.prototype.findByEmail = function(email, done) {
+repo.prototype.findByEmail = function (email, done) {
   this.findOne({email : email}, done)
 }
 
-module.exports = new collection()
+repo.prototype.ensureIndexes = function(done) {
+  sharedMongo.open((err,db) => {
+    if (err) return done(err)
+
+    var collection = db.collection(this.collectionName)
+    async.series([
+     (cb) => {collection.ensureIndex({'email' : 1}, {}, cb)} //array index; could get large
+     //more here.
+    ], done)
+  })
+}
+
+
+var db = new repo()
+db.ensureIndexes() //always ensure them once.
+module.exports = db

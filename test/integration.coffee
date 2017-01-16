@@ -109,3 +109,39 @@ describe "Integration tests", ->
       it "should have first result", -> @result[0].firstName.should.equal "test1"
       it "should include model function", -> (typeof @result[0].fullName).should.equal "function"
       it "should include sub model function", -> (typeof @result[0].home.fullAddress).should.equal "function"
+
+    describe "When findAndModify matching doc with sub-type", ->
+      before (done) ->
+        #native reset
+        shared.open (err,db) =>
+          done err if err?
+          c = db.collection("people")
+          async.series [
+            (cb) -> c.remove {}, cb
+            (cb) -> c.insert {firstName : "test1", home : {address : 'test'}}, cb
+            (cb) -> c.insert {firstName : "test2", home : {address : 'test'}}, cb
+            (cb) -> c.insert {firstName : "test3", home : {address : 'test'}}, cb
+            (cb) => people.findAndModify {firstName : /^test/},[["_id", "asc"]],{$inc: {books: 1}},{new: true}, (err, @result) => cb err
+          ],done
+
+      it "should find match", -> should.exist @result
+      it "should find matching record", -> @result.firstName.should.equal "test1"
+      it "should increment property", -> @result.books.should.equal 1
+      it "should include model function", -> (typeof @result.fullName).should.equal "function"
+      it "should include sub model function", -> (typeof @result.home.fullAddress).should.equal "function"
+
+    describe "When upsert new doc", ->
+      before (done) ->
+        #native reset
+        shared.open (err, db) =>
+          return done err if err?
+          c = db.collection("people")
+          async.series [
+            (cb) => c.remove {}, cb
+            (cb) => people.upsert {firstName : "test1"}, {firstName : "test1", home : {address : 'test'}}, (err, @result) => cb err
+          ], done
+
+      it "should return result", -> should.exist @result
+      it "should find matching record", -> @result.firstName.should.equal "test1"
+      it "should include model function", -> (typeof @result.fullName).should.equal "function"
+      it "should include sub model function", -> (typeof @result.home.fullAddress).should.equal "function"

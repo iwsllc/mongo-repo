@@ -23,129 +23,123 @@ genericDb.prototype.merge = function(err,doc,done) {
 }
 
 genericDb.prototype.findById = function(id, done) {
-  var self = this
   if (typeof(id) === 'string') {
     id = mongodb.ObjectID(id)
   }
-  this.findOne({_id : id}, function(err,doc) { self.merge(err,doc,done) });
+  this.findOne({_id : id}, (err, doc) => {
+    this.merge(err, doc, done)
+  })
 }
 
 genericDb.prototype.find = function(query, done) {
-  var self = this
-  sharedMongo.open(function(err,db) {
+  sharedMongo.open((err,db) => {
     if (err) return done(err)
-
-    var collection = db.collection(self.collectionName)
-    collection.find(query).toArray(function(err,docs) {
+    var collection = db.collection(this.collectionName)
+    collection.find(query).toArray((err,docs) => {
       if (err) return done(err)
       if (!docs || !docs.length) return done(null, [])
-      var rdocs = []
-      _.forEach(docs,function(doc) {rdocs.push(self.new(doc))})
-      done(null, rdocs)
+      done(null, docs.map((d) => {return this.new(d)}))
     })
   })
 }
 genericDb.prototype.findCursor = function(query, options, done) {
-  var self = this
   if (typeof(options) === 'function')
   {
     done = options
     options = {}
   }
-  sharedMongo.open(function(err,db) {
+  sharedMongo.open((err,db) => {
     if (err) return done(err)
-
-    var collection = db.collection(self.collectionName)
+    var collection = db.collection(this.collectionName)
     done(null, collection.find(query, options))
   })
 }
 
 genericDb.prototype.findOne = function(query, done) {
-  var self = this
-  sharedMongo.open(function(err,db) {
+  sharedMongo.open((err,db) => {
     if (err) return done(err)
-
-    var collection = db.collection(self.collectionName)
-    collection.findOne(query, function(err,doc) { self.merge(err,doc,done) })
+    var collection = db.collection(this.collectionName)
+    collection.findOne(query, (err,doc) => { this.merge(err,doc,done) })
   })
 }
 
 genericDb.prototype.insert = function(data, done) {
-  var self = this
-  sharedMongo.open(function(err,db) {
+  sharedMongo.open((err,db) => {
     if (err) return done(err)
 
-    var collection = db.collection(self.collectionName);
-    collection.insert(data, function(err, result) {
-      done(err,result && result.ops && result.ops.length ? result.ops[0] : null, result);
+    var collection = db.collection(this.collectionName);
+    collection.insert(data, (err, result) => {
+      done(err,result && result.ops && result.ops.length ? this.new(result.ops[0]) : null, result);
     })
   })
 }
 
 genericDb.prototype.upsert = function(query, data, done) {
-  this.update(query, data, {upsert : true}, done)
+  sharedMongo.open((err,db) => {
+    if (err) return done(err)
+    var collection = db.collection(this.collectionName);
+    collection.update(query, data, {upsert : true}, (err, result) => {
+      if (err) return done(err)
+      if (result && result.result && result.result.upserted && result.result.upserted.length) {
+        this.findById(result.result.upserted[0]._id, done)
+      } else return done()
+    })
+  })
 }
 
 genericDb.prototype.findAndModify = function(query, sort, update, options, done) {
-  var self = this
-  sharedMongo.open(function(err,db) {
+  sharedMongo.open((err,db) => {
     if (err) return done(err)
 
-    var collection = db.collection(self.collectionName);
-    collection.findAndModify(query, sort, update, options, done)
+    var collection = db.collection(this.collectionName);
+    collection.findAndModify(query, sort, update, options, (err, result) => {
+      return this.merge(err, result ? result.value : null, done)
+    })
   })
 }
 genericDb.prototype.update = function(query, setQuery, options, done) {
-  var self = this
   if (typeof(options) === 'function') {
     done = options
     options = {}
   }
-  sharedMongo.open(function(err,db) {
+  sharedMongo.open((err,db) => {
     if (err) return done(err)
 
-    var collection = db.collection(self.collectionName);
+    var collection = db.collection(this.collectionName);
     collection.update(query, setQuery, options, done)
   })
 }
 
 genericDb.prototype.removeById = function(id, done) {
-  var self = this
   if (typeof(id) === 'string') {
     id = mongodb.ObjectID(id)
   }
-  sharedMongo.open(function(err,db) {
+  sharedMongo.open((err,db) => {
     if (err) return done(err)
-
-    var collection = db.collection(self.collectionName)
+    var collection = db.collection(this.collectionName)
     collection.remove({_id : id}, {}, done)
   })
 }
 
 genericDb.prototype.remove = function(query, options, done) {
-  var self = this
-
   if (typeof(options) === 'function')
   {
     done = options
     options = {}
   }
 
-  sharedMongo.open(function(err,db) {
+  sharedMongo.open((err,db) => {
     if (err) return done(err)
 
-    var collection = db.collection(self.collectionName)
+    var collection = db.collection(this.collectionName)
     collection.remove(query, options, done)
   })
 }
 
 genericDb.prototype.count = function(query, done) {
-  var self = this
-
-  sharedMongo.open(function(err,db) {
+  sharedMongo.open((err,db) => {
     if (err) return done(err)
-
-    var collection = db.collection(self.collectionName)
+    var collection = db.collection(this.collectionName)
     collection.count(query, done)
   })
 }

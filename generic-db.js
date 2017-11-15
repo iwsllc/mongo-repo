@@ -23,7 +23,7 @@ genericDb.prototype.merge = function(err,doc,done) {
 }
 
 genericDb.prototype.findById = function(id, done) {
-  if (typeof(id) === 'string') {
+  if (typeof(id) === "string" && mongodb.ObjectID.isValid(id)) {
     id = mongodb.ObjectID(id)
   }
   this.findOne({_id : id}, (err, doc) => {
@@ -111,7 +111,7 @@ genericDb.prototype.update = function(query, setQuery, options, done) {
 }
 
 genericDb.prototype.removeById = function(id, done) {
-  if (typeof(id) === 'string') {
+  if (typeof(id) === "string" && mongodb.ObjectID.isValid(id)) {
     id = mongodb.ObjectID(id)
   }
   sharedMongo.open((err,db) => {

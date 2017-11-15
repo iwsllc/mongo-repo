@@ -18,7 +18,7 @@ class PeopleCollection extends BaseCollection {
 
       var collection = db.collection(this.collectionName)
       async.series([
-        (cb) => {collection.ensureIndex({email: 1}, {unique: true}, cb)} //array index; could get large
+        (cb) => {collection.ensureIndex({email: 1}, {}, cb)} //array index; could get large
       ],done)
     })
   }

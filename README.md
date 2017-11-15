@@ -6,60 +6,69 @@ I use this utility for some of my own projects. It's a lightweight wrapper for t
 
 It's meant to allow you to extend other native hooks you commonly use.
 
-##Get Started
-Extend the base collection in your own collection module
+## Get Started
+Extend the base collection in your own collection module. [Full example collection](./blob/master/examples/collection-people.js)
 
-    var util           = require('util')
-    var baseCollection = require('skinny-mongo').collection
+[Model example](./blob/master/examples/model-person.js)
 
-    //sample record; will be used as a baseline for all find operations.
-    var record = function() {
-      this._id   = null
-      this.name  = null
-      this.email = null
-      return this
-    }
-    //You can add record prototypes and they'll be included on the find results.
+```javascript
+class Model {
+  ///...
+}
 
-    //Setup collection definition
-    var collection = function() {
-      this.collectionName = 'people'
-      this.record = record
-      return this
-    }
-    util.inherits(collection, baseCollection)
+class PeopleCollection extends BaseCollection {
+  //define collection name and base model type
+  constructor() {
+    super()
+    this.collectionName = "people"
+    this.record = Model
+  }
 
-    //add more collection prototypes here like helper queries.
-    collection.prototype.findByEmail = function(email,done) {
-      this.findOne({email : email}, done)
-    }
+  //optional helpers
+  findByEmail(email, done) {return this.findOne({email}, done)}
 
-    module.exports = new collection()
+  //optional index setup
+  ensureIndexes(done) {
+    if (typeof done == 'undefined') done = function(err) {if (err) logger.log(err)}
 
-##Using collections
+    sharedMongo.open((err, db) => {
+      if (err) return done(err)
 
-    //call once when bootstrapping your app. This connection will get
-    //re-used with every call from within the collection
-    var shared_db = require("skinny-mongo").db
-    shared_db.init("mongodb://localhost:27017/my_collection",
-      function(err) { console.log(err) })
-
-    //create collection instance
-    var people = require("./people")
-    people.findByEmail("test@me.com", function(err,doc) {
-      console.log(doc.email)
+      var collection = db.collection(this.collectionName)
+      async.series([
+        (cb) => {collection.ensureIndex({email: 1}, {}, cb)}
+        //more here
+      ],done)
     })
+  }
+}
+var db = new PeopleCollection()
+db.ensureIndexes() //only run in dev/small dbs. Larger dbs should handle indexes more delicately.
+module.exports = db
+```
 
+## Using collections
+```javascript
+//call once when bootstrapping your app with a connection pool.
+require("../shared-db").init("mongodb://localhost:27017/mongo-repo-test", (err) => {
+  if (err) return console.log(err)
 
-##Included Helpers
+  //use collection instance
+  var people = require("./people")
+  people.findByEmail("test@me.com", function(err, doc) {
+    console.log(doc)
+  })
+})
+```
 
- - find          - function({query}, callback) callback returns array of documents
- - findOne       - function({query}, callback) callback returns matching document
- - findById      - function(_id, callback) callback returns document
- - findAndModify - function({query}, [sort], {update}, {options}, callback) - native passthrough
- - insert        - function({data}, callback)  callback returns inserted document; assuming one doc
- - update        - function({data}, callback)  native passthrough
- - upsert        - function({data}, callback)  native passthrough
- - removeById    - function(_id, callback) native passthrough
- - remove        - function({query}, callback) native passthrough
- - count         - function({query}, callback) native passthrough
+## Included Helpers
+ - find          - `function({query}, callback)` callback returns array of documents
+ - findOne       - `function({query}, callback)` callback returns matching document
+ - findById      - `function(_id, callback)` callback returns document
+ - findAndModify - `function({query}, [sort], {update}, {options}, callback)` - native passthrough
+ - insert        - `function({data}, callback)`  callback returns inserted document; assuming one doc
+ - update        - `function({data}, callback)`  native passthrough
+ - upsert        - `function({data}, callback)`  native passthrough
+ - removeById    - `function(_id, callback)` native passthrough
+ - remove        - `function({query}, callback)` native passthrough
+ - count         - `function({query}, callback)` native passthrough

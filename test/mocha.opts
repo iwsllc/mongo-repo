@@ -3,3 +3,4 @@
 --recursive
 --colors
 --compilers coffee:coffee-script/register
+--require test/init

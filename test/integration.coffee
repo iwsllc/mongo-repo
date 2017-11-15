@@ -1,7 +1,7 @@
 async  = require 'async'
 should = require 'should'
-people = require "../examples/sample-people-collection"
-model  = require "../examples/model"
+people = require "../examples/collection-people"
+model  = require "../examples/model-person"
 shared = require("../index").db
 
 describe "Integration tests", ->
@@ -99,7 +99,7 @@ describe "Integration tests", ->
             (cb) -> c.insert {firstName : "test2", home : {address : 'test'}}, cb
             (cb) -> c.insert {firstName : "test3", home : {address : 'test'}}, cb
             (cb) =>
-              people.find {firstName : /^test/}, (err,docs) =>
+              people.find {firstName : /^test/}, (err, docs) =>
                 @result = docs
                 cb err
           ],done

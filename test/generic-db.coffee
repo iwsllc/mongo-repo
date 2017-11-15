@@ -1,6 +1,6 @@
 should     = require 'should'
-people     = require "../examples/sample-people-collection"
-model      = require "../examples/model"
+people     = require "../examples/collection-people"
+model      = require "../examples/model-person"
 
 describe "Generic DB", ->
   describe "Repo defaults", ->

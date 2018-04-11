@@ -13,7 +13,7 @@ class PeopleCollection extends BaseCollection {
   ensureIndexes(done) {
     if (typeof done == 'undefined') done = function(err) {if (err) logger.log(err)}
 
-    sharedMongo.open((err, db) => {
+    sharedMongo.openDefaultDb((err, db) => {
       if (err) return done(err)
 
       var collection = db.collection(this.collectionName)

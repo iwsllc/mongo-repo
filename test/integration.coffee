@@ -8,7 +8,7 @@ describe "Integration tests", ->
   describe "insert", ->
     before (done) ->
       #native reset
-      shared.open (err, db) =>
+      shared.openDefaultDb (err, db) =>
         done err if err?
         c = db.collection("people")
         async.series [
@@ -26,7 +26,7 @@ describe "Integration tests", ->
   describe "removeById", ->
     before (done) ->
       #native reset
-      shared.open (err, db) =>
+      shared.openDefaultDb (err, db) =>
         done err if err?
         c = db.collection("people")
         async.series [
@@ -46,7 +46,7 @@ describe "Integration tests", ->
     describe "When finding matching doc", ->
       before (done) ->
         #native reset
-        shared.open (err,db) =>
+        shared.openDefaultDb (err,db) =>
           done err if err?
           c = db.collection("people")
           async.series [
@@ -68,7 +68,7 @@ describe "Integration tests", ->
     describe "When finding matching doc", ->
       before (done) ->
         #native reset
-        shared.open (err,db) =>
+        shared.openDefaultDb (err,db) =>
           done err if err?
           c = db.collection("people")
           async.series [
@@ -90,7 +90,7 @@ describe "Integration tests", ->
     describe "When finding matching doc with sub-type", ->
       before (done) ->
         #native reset
-        shared.open (err,db) =>
+        shared.openDefaultDb (err,db) =>
           done err if err?
           c = db.collection("people")
           async.series [
@@ -113,7 +113,7 @@ describe "Integration tests", ->
     describe "When findAndModify matching doc with sub-type", ->
       before (done) ->
         #native reset
-        shared.open (err,db) =>
+        shared.openDefaultDb (err,db) =>
           done err if err?
           c = db.collection("people")
           async.series [
@@ -133,15 +133,76 @@ describe "Integration tests", ->
     describe "When upsert new doc", ->
       before (done) ->
         #native reset
-        shared.open (err, db) =>
+        shared.openDefaultDb (err, db) =>
           return done err if err?
           c = db.collection("people")
           async.series [
             (cb) => c.remove {}, cb
             (cb) => people.upsert {firstName : "test1"}, {firstName : "test1", home : {address : 'test'}}, (err, @result) => cb err
+            (cb) => people.findById @result.upserted[0]._id, (err, @found) => cb err
           ], done
 
       it "should return result", -> should.exist @result
+      it "should find matching record", -> @found.firstName.should.equal "test1"
+      it "should include model function", -> (typeof @found.fullName).should.equal "function"
+      it "should include sub model function", -> (typeof @found.home.fullAddress).should.equal "function"
+
+  describe "count", ->
+    describe "When counting", ->
+      before (done) ->
+        #native reset
+        shared.open (err,db) =>
+          done err if err?
+          c = db.collection("people")
+          async.series [
+            (cb) -> c.remove {}, cb
+            (cb) -> c.insert {firstName : "test1", home : {address : 'test'}}, cb
+            (cb) -> c.insert {firstName : "test2", home : {address : 'test'}}, cb
+            (cb) -> c.insert {firstName : "test3", home : {address : 'test'}}, cb
+            (cb) => people.count {firstName : /^test/}, (err, @total) => cb(err)
+          ],done
+
+      it "should count total", -> @total.should.equal 3
+  describe "aggregate", ->
+    describe "When aggregating", ->
+      before (done) ->
+        #native reset
+        shared.open (err,db) =>
+          done err if err?
+          c = db.collection("people")
+          async.series [
+            (cb) -> c.remove {}, cb
+            (cb) -> c.insert {firstName : "test1", home : {address : 'test'}}, cb
+            (cb) -> c.insert {firstName : "test2", home : {address : 'test'}}, cb
+            (cb) -> c.insert {firstName : "test3", home : {address : 'test'}}, cb
+            (cb) => people.aggregate [
+              {$match: {firstName: /^test/}}
+              {$group: {_id: 1, total: {$sum: 1}}}
+            ], (err, @results) => cb(err)
+          ],done
+
+      it "should count results", -> @results[0].total.should.eql 3
+    describe "When aggregating with a cursor", ->
+      before (done) ->
+        #native reset
+        shared.open (err,db) =>
+          done err if err?
+          c = db.collection("people")
+          async.series [
+            (cb) -> c.remove {}, cb
+            (cb) -> c.insert {firstName : "test1", home : {address : 'test'}}, cb
+            (cb) -> c.insert {firstName : "test2", home : {address : 'test'}}, cb
+            (cb) -> c.insert {firstName : "test3", home : {address : 'test'}}, cb
+            (cb) => people.aggregate [
+                {$match: {firstName: /^test/}}
+                {$group: {_id: 1, total: {$sum: 1}}}
+              ], {cursor: {}}, (err, cursor) =>
+                cb(err) if err
+                cursor.toArray (err, @results) =>
+                  cb(err)
+          ], done
+
+      it "should count results", -> @results[0].total.should.eql 3
       it "should find matching record", -> @result.firstName.should.equal "test1"
       it "should include model function", -> (typeof @result.fullName).should.equal "function"
       it "should include sub model function", -> (typeof @result.home.fullAddress).should.equal "function"
@@ -201,3 +262,4 @@ describe "Integration tests", ->
           ], done
 
       it "should count results", -> @results[0].total.should.eql 3
+

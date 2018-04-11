@@ -2,6 +2,7 @@
 -u bdd
 --recursive
 --colors
+--exit
 --require coffeescript/register
 --require test/init
 --exit

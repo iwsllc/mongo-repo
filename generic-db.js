@@ -32,7 +32,7 @@ genericDb.prototype.findById = function(id, done) {
 }
 
 genericDb.prototype.find = function(query, done) {
-  sharedMongo.open((err,db) => {
+  sharedMongo.openDefaultDb((err,db) => {
     if (err) return done(err)
     var collection = db.collection(this.collectionName)
     collection.find(query).toArray((err,docs) => {
@@ -48,7 +48,7 @@ genericDb.prototype.findCursor = function(query, options, done) {
     done = options
     options = {}
   }
-  sharedMongo.open((err,db) => {
+  sharedMongo.openDefaultDb((err, db) => {
     if (err) return done(err)
     var collection = db.collection(this.collectionName)
     done(null, collection.find(query, options))
@@ -56,7 +56,7 @@ genericDb.prototype.findCursor = function(query, options, done) {
 }
 
 genericDb.prototype.findOne = function(query, done) {
-  sharedMongo.open((err,db) => {
+  sharedMongo.openDefaultDb((err,db) => {
     if (err) return done(err)
     var collection = db.collection(this.collectionName)
     collection.findOne(query, (err,doc) => { this.merge(err,doc,done) })
@@ -64,7 +64,7 @@ genericDb.prototype.findOne = function(query, done) {
 }
 
 genericDb.prototype.insert = function(data, done) {
-  sharedMongo.open((err,db) => {
+  sharedMongo.openDefaultDb((err,db) => {
     if (err) return done(err)
 
     var collection = db.collection(this.collectionName);
@@ -75,20 +75,11 @@ genericDb.prototype.insert = function(data, done) {
 }
 
 genericDb.prototype.upsert = function(query, data, done) {
-  sharedMongo.open((err,db) => {
-    if (err) return done(err)
-    var collection = db.collection(this.collectionName);
-    collection.update(query, data, {upsert : true}, (err, result) => {
-      if (err) return done(err)
-      if (result && result.result && result.result.upserted && result.result.upserted.length) {
-        this.findById(result.result.upserted[0]._id, done)
-      } else return done()
-    })
-  })
+  this.update(query, data, {upsert: true}, done)
 }
 
 genericDb.prototype.findAndModify = function(query, sort, update, options, done) {
-  sharedMongo.open((err,db) => {
+  sharedMongo.openDefaultDb((err,db) => {
     if (err) return done(err)
 
     var collection = db.collection(this.collectionName);
@@ -102,11 +93,14 @@ genericDb.prototype.update = function(query, setQuery, options, done) {
     done = options
     options = {}
   }
-  sharedMongo.open((err,db) => {
+  sharedMongo.openDefaultDb((err,db) => {
     if (err) return done(err)
 
     var collection = db.collection(this.collectionName);
-    collection.update(query, setQuery, options, done)
+    collection.update(query, setQuery, options, (err, writeResult) => {
+      if (err) return done(err)
+      done(null, writeResult.result)
+    })
   })
 }
 
@@ -114,7 +108,7 @@ genericDb.prototype.removeById = function(id, done) {
   if (typeof(id) === "string" && mongodb.ObjectID.isValid(id)) {
     id = mongodb.ObjectID(id)
   }
-  sharedMongo.open((err,db) => {
+  sharedMongo.openDefaultDb((err,db) => {
     if (err) return done(err)
     var collection = db.collection(this.collectionName)
     collection.remove({_id : id}, {}, done)
@@ -128,7 +122,7 @@ genericDb.prototype.remove = function(query, options, done) {
     options = {}
   }
 
-  sharedMongo.open((err,db) => {
+  sharedMongo.openDefaultDb((err,db) => {
     if (err) return done(err)
 
     var collection = db.collection(this.collectionName)
@@ -137,7 +131,7 @@ genericDb.prototype.remove = function(query, options, done) {
 }
 
 genericDb.prototype.count = function(query, done) {
-  sharedMongo.open((err,db) => {
+  sharedMongo.openDefaultDb((err,db) => {
     if (err) return done(err)
     var collection = db.collection(this.collectionName)
     collection.count(query, done)

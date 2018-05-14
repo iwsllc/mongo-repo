@@ -145,3 +145,19 @@ describe "Integration tests", ->
       it "should find matching record", -> @result.firstName.should.equal "test1"
       it "should include model function", -> (typeof @result.fullName).should.equal "function"
       it "should include sub model function", -> (typeof @result.home.fullAddress).should.equal "function"
+  describe "count", ->
+    describe "When counting", ->
+      before (done) ->
+        #native reset
+        shared.open (err,db) =>
+          done err if err?
+          c = db.collection("people")
+          async.series [
+            (cb) -> c.remove {}, cb
+            (cb) -> c.insert {firstName : "test1", home : {address : 'test'}}, cb
+            (cb) -> c.insert {firstName : "test2", home : {address : 'test'}}, cb
+            (cb) -> c.insert {firstName : "test3", home : {address : 'test'}}, cb
+            (cb) => people.count {firstName : /^test/}, (err, @total) => cb(err)
+          ],done
+
+      it "should count total", -> @total.should.equal 3

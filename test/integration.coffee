@@ -161,3 +161,22 @@ describe "Integration tests", ->
           ],done
 
       it "should count total", -> @total.should.equal 3
+  describe "aggregate", ->
+    describe "When aggregating", ->
+      before (done) ->
+        #native reset
+        shared.open (err,db) =>
+          done err if err?
+          c = db.collection("people")
+          async.series [
+            (cb) -> c.remove {}, cb
+            (cb) -> c.insert {firstName : "test1", home : {address : 'test'}}, cb
+            (cb) -> c.insert {firstName : "test2", home : {address : 'test'}}, cb
+            (cb) -> c.insert {firstName : "test3", home : {address : 'test'}}, cb
+            (cb) => people.aggregate [
+              {$match: {firstName: /^test/}}
+              {$group: {_id: 1, total: {$sum: 1}}}
+            ], (err, @results) => cb(err)
+          ],done
+
+      it "should count results", -> @results[0].total.should.eql 3

@@ -144,4 +144,17 @@ genericDb.prototype.count = function(query, done) {
   })
 }
 
+genericDb.prototype.aggregate = function(pipeline, options, next) {
+  if (typeof options === "function") {
+    next = options
+    options = {}
+  }
+  sharedMongo.open((err, db) => {
+    if (err) return next(err)
+    var collection = db.collection(this.collectionName)
+    collection.aggregate(pipeline, options, next)
+  })
+}
+
+
 module.exports = genericDb

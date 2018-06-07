@@ -152,7 +152,11 @@ genericDb.prototype.aggregate = function(pipeline, options, next) {
   sharedMongo.open((err, db) => {
     if (err) return next(err)
     var collection = db.collection(this.collectionName)
-    collection.aggregate(pipeline, options, next)
+    if (options.cursor) {
+      let cursor = collection.aggregate(pipeline, options)
+      next(null, cursor)
+    } else
+      collection.aggregate(pipeline, options, next)
   })
 }
 

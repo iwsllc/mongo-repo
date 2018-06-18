@@ -143,7 +143,7 @@ genericDb.prototype.aggregate = function(pipeline, options, next) {
     next = options
     options = {}
   }
-  sharedMongo.open((err, db) => {
+  sharedMongo.openDefaultDb((err,db) => {
     if (err) return next(err)
     var collection = db.collection(this.collectionName)
     if (options.cursor) {

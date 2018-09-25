@@ -27,14 +27,14 @@
   },
   "homepage": "https://github.com/IWSLLC/mongo-repo",
   "devDependencies": {
-    "coffee-script": "^1.12.7",
-    "mocha": "^3",
-    "should": "^13.1.3",
-    "sinon": "^4.1.2"
+    "mocha": "^5.2.0",
+    "should": "^13.2.3",
+    "sinon": "^6.3.4"
   },
   "dependencies": {
-    "async": "^2.6.0",
-    "lodash": "^4.17.4",
-    "mongodb": "^2.2.33"
+    "async": "^2.6.1",
+    "coffeescript": "^2.3.2",
+    "lodash": "^4.17.11",
+    "mongodb": "^2.2.36"
   }
 }

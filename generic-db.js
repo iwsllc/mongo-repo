@@ -33,8 +33,8 @@ class GenericDb {
     })
   }
 
-find(query, done) {
-  sharedMongo.openDefaultDb((err,db) => {
+  find(query, done) {
+    sharedMongo.openDefaultDb((err,db) => {
       if (err) return done(err)
       var collection = db.collection(this.collectionName)
       collection.find(query).toArray((err,docs) => {
@@ -57,8 +57,6 @@ find(query, done) {
     })
   }
 
-}
-
   findOne(query, done) {
     sharedMongo.openDefaultDb((err,db) => {
       if (err) return done(err)
@@ -78,9 +76,9 @@ find(query, done) {
     })
   }
 
-upsert(query, data, done) {
-  this.update(query, data, {upsert: true}, done)
-}
+  upsert(query, data, done) {
+    this.update(query, data, {upsert: true}, done)
+  }
 
   findAndModify(query, sort, update, options, done) {
     sharedMongo.openDefaultDb((err,db) => {
@@ -109,17 +107,10 @@ upsert(query, data, done) {
   }
 
   removeById(id, done) {
-    if (typeof(id) === "string" && mongodb.ObjectID.isValid(id)) {
-      id = mongodb.ObjectID(id)
-    }
-    sharedMongo.openDefaultDb((err,db) => {
-      if (err) return done(err)
-      var collection = db.collection(this.collectionName)
-      collection.remove({_id : id}, {}, done)
-    })
+    this.deleteOne({_id: id}, {}, done)
   }
 
-  remove(query, options, done) {
+  delete(query, options, done) {
     if (typeof(options) === 'function')
     {
       done = options
@@ -130,8 +121,25 @@ upsert(query, data, done) {
       if (err) return done(err)
 
       var collection = db.collection(this.collectionName)
-      collection.remove(query, options, done)
+      collection.deleteMany(query, options, done)
     })
+  }
+  deleteOne(query, options, done) {
+    if (typeof(options) === 'function')
+    {
+      done = options
+      options = {}
+    }
+
+    sharedMongo.openDefaultDb((err,db) => {
+      if (err) return done(err)
+
+      var collection = db.collection(this.collectionName)
+      collection.deleteOne(query, options, done)
+    })
+  }
+  remove(query, options, done) {
+    this.deleteMany(query, options, done)
   }
 
   count(query, done) {

@@ -31,12 +31,8 @@ describe "Integration tests", ->
         c = db.collection("people")
         async.series [
           (cb) -> c.remove {}, cb
-          (cb) => people.insert {firstName: "test3"}, (err, result, driver_result) =>
-            @result = result
-            cb err
-          (cb) => people.removeById @result._id.toString(), (err, driver_result) =>
-            @driver_result = driver_result
-            cb err
+          (cb) => people.insert {firstName: "test3"}, (err, @result, driver_result) => cb err
+          (cb) => people.removeById @result._id, (err, @driver_result) => cb err
         ], done
     it "should return the driver result", -> should.exist @driver_result
     it "should return the driver result, result", -> @driver_result.result.ok.should.equal 1

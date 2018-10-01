@@ -1,6 +1,6 @@
 {
   "name": "mongo-repo",
-  "version": "0.14.0",
+  "version": "3.1.0",
   "description": "This module is a thin wrapper around mongodb native driver that allows you to easily derive basic collection operations and share a pooled connection in a Node application.",
   "main": "index.js",
   "scripts": {

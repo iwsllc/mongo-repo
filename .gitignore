@@ -11,4 +11,3 @@ pids
 node_modules
 npm-debug.log
 .orig
-package-lock.json

@@ -7,9 +7,9 @@ I use this utility for some of my own projects. It's a lightweight wrapper for t
 It's meant to allow you to extend other native hooks you commonly use.
 
 ## Get Started
-Extend the base collection in your own collection module. [Full example collection](./blob/master/examples/collection-people.js)
+Extend the base collection in your own collection module. [Full example collection](./examples/collection-people.js)
 
-[Model example](./blob/master/examples/model-person.js)
+[Model example](./examples/model-person.js)
 
 ```javascript
 class Model {

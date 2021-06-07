@@ -1,4 +1,4 @@
-const BaseCollection = require('../index').collection
+const BaseCollection = require('../index').collectionLegacy
 const model = require('./model-person')
 
 class PeopleCollection extends BaseCollection {

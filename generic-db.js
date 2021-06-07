@@ -1,164 +1,44 @@
-var sharedMongo = require('./shared-db')
-var mongodb     = require("mongodb")
-var _           = require("lodash")
+const Collection = require('./collection')
 
+class GenericDb extends Collection {
+  execPromise(asyncMethod, ...args) {
+    // specific for these methods; there is always params and always a callback
+    let callback = args?.length >= 1 ? args[args.length - 1] : null
+    let params = args?.length >= 2 ? args.slice(0, args.length - 1) : null
 
-var genericDb = function() {}
-
-genericDb.prototype.collectionName = ''
-genericDb.prototype.record = function(defaults) {
-  if (defaults)
-    _.merge(this,defaults)
-  return this
-}
-
-genericDb.prototype.new = function(defaults) {
-  return new this.record(defaults)
-}
-
-genericDb.prototype.merge = function(err,doc,done) {
-  if (err) return done(err)
-  if (!doc) return done()
-  done(null, this.new(doc))
-}
-
-genericDb.prototype.findById = function(id, done) {
-  if (typeof(id) === "string" && mongodb.ObjectID.isValid(id)) {
-    id = mongodb.ObjectID(id)
+    asyncMethod.call(this, ...params, callback)
+      .then((result) => {
+        if (callback != null) callback(null, result)
+      })
+      .catch((err) => {
+        if (callback != null) callback(err)
+      })
   }
-  this.findOne({_id : id}, (err, doc) => {
-    this.merge(err, doc, done)
-  })
-}
 
-genericDb.prototype.find = function(query, done) {
-  sharedMongo.open((err,db) => {
-    if (err) return done(err)
-    var collection = db.collection(this.collectionName)
-    collection.find(query).toArray((err,docs) => {
+  // overrides
+  findById(id, done) { this.execPromise(super.findById, id, done) }
+  find(query, done) { this.execPromise(super.find, query, done) }
+  findCursor(query, options, done) { this.execPromise(super.findCursor, query, options, done) }
+  findOne(query, done) { this.execPromise(super.findOne, query, done) }
+  insert(data, done) {
+    this.execPromise(super.insert, data, (err, result) => {
+      done(err, result.doc, result.driver)
+    })
+  }
+
+  upsert(query, data, done) { this.execPromise(super.upsert, query, data, done) }
+  findAndModify(query, sort, update, options, done) {
+    this.execPromise(super.findAndModify, query, sort, update, options, (err, found) => {
       if (err) return done(err)
-      if (!docs || !docs.length) return done(null, [])
-      done(null, docs.map((d) => {return this.new(d)}))
+      done(null, found.value)
     })
-  })
-}
-genericDb.prototype.findCursor = function(query, options, done) {
-  if (typeof(options) === 'function')
-  {
-    done = options
-    options = {}
-  }
-  sharedMongo.open((err,db) => {
-    if (err) return done(err)
-    var collection = db.collection(this.collectionName)
-    done(null, collection.find(query, options))
-  })
-}
-
-genericDb.prototype.findOne = function(query, done) {
-  sharedMongo.open((err,db) => {
-    if (err) return done(err)
-    var collection = db.collection(this.collectionName)
-    collection.findOne(query, (err,doc) => { this.merge(err,doc,done) })
-  })
-}
-
-genericDb.prototype.insert = function(data, done) {
-  sharedMongo.open((err,db) => {
-    if (err) return done(err)
-
-    var collection = db.collection(this.collectionName);
-    collection.insert(data, (err, result) => {
-      done(err,result && result.ops && result.ops.length ? this.new(result.ops[0]) : null, result);
-    })
-  })
-}
-
-genericDb.prototype.upsert = function(query, data, done) {
-  sharedMongo.open((err,db) => {
-    if (err) return done(err)
-    var collection = db.collection(this.collectionName);
-    collection.update(query, data, {upsert : true}, (err, result) => {
-      if (err) return done(err)
-      if (result && result.result && result.result.upserted && result.result.upserted.length) {
-        this.findById(result.result.upserted[0]._id, done)
-      } else return done()
-    })
-  })
-}
-
-genericDb.prototype.findAndModify = function(query, sort, update, options, done) {
-  sharedMongo.open((err,db) => {
-    if (err) return done(err)
-
-    var collection = db.collection(this.collectionName);
-    collection.findAndModify(query, sort, update, options, (err, result) => {
-      return this.merge(err, result ? result.value : null, done)
-    })
-  })
-}
-genericDb.prototype.update = function(query, setQuery, options, done) {
-  if (typeof(options) === 'function') {
-    done = options
-    options = {}
-  }
-  sharedMongo.open((err,db) => {
-    if (err) return done(err)
-
-    var collection = db.collection(this.collectionName);
-    collection.update(query, setQuery, options, done)
-  })
-}
-
-genericDb.prototype.removeById = function(id, done) {
-  if (typeof(id) === "string" && mongodb.ObjectID.isValid(id)) {
-    id = mongodb.ObjectID(id)
-  }
-  sharedMongo.open((err,db) => {
-    if (err) return done(err)
-    var collection = db.collection(this.collectionName)
-    collection.remove({_id : id}, {}, done)
-  })
-}
-
-genericDb.prototype.remove = function(query, options, done) {
-  if (typeof(options) === 'function')
-  {
-    done = options
-    options = {}
   }
 
-  sharedMongo.open((err,db) => {
-    if (err) return done(err)
-
-    var collection = db.collection(this.collectionName)
-    collection.remove(query, options, done)
-  })
+  update(query, set, options, done) { this.execPromise(super.update, query, set, options, done) }
+  removeById(id, done) { this.execPromise(super.removeById, id, done) }
+  remove(query, options, done) { this.execPromise(super.remove, query, options, done) }
+  count(query, done) { this.execPromise(super.count, query, done) }
+  aggregate(aggregate, done) { this.execPromise(super.aggregate, aggregate, done) }
 }
 
-genericDb.prototype.count = function(query, done) {
-  sharedMongo.open((err,db) => {
-    if (err) return done(err)
-    var collection = db.collection(this.collectionName)
-    collection.count(query, done)
-  })
-}
-
-genericDb.prototype.aggregate = function(pipeline, options, next) {
-  if (typeof options === "function") {
-    next = options
-    options = {}
-  }
-  sharedMongo.open((err, db) => {
-    if (err) return next(err)
-    var collection = db.collection(this.collectionName)
-    if (options.cursor) {
-      let cursor = collection.aggregate(pipeline, options)
-      next(null, cursor)
-    } else
-      collection.aggregate(pipeline, options, next)
-  })
-}
-
-
-module.exports = genericDb
+module.exports = GenericDb

@@ -1,4 +1,4 @@
-var _    = require("lodash")
+var _ = require('lodash')
 
 class BaseRecord {
   constructor(defaults) {
@@ -8,8 +8,7 @@ class BaseRecord {
   initDefaults(hash) {
     if (!hash) return
     for (var key in hash) {
-      if (typeof this[key] === "undefined")
-        this[key] = hash[key]
+      if (typeof this[key] === 'undefined') { this[key] = hash[key] }
     }
   }
 }

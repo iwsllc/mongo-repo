@@ -1,5 +1,3 @@
-async  = require 'async'
-should = require 'should'
 people = require "../examples/collection-people"
 model  = require "../examples/model-person"
 shared = require("../index").db
@@ -8,16 +6,14 @@ describe "Integration tests", ->
   describe "insert", ->
     before (done) ->
       #native reset
-      shared.open (err, db) =>
-        done err if err?
-        c = db.collection("people")
-        async.series [
-          (cb) -> c.remove {}, cb
-          (cb) => people.insert {firstName: "test3"}, (err, result, driver_result) =>
-            @result = result
-            @driver_result = driver_result
-            cb err
-        ], done
+      db = shared.db
+      c = db.collection("people")
+      async.series [
+        (cb) -> c.removeMany {}, cb
+        (cb) => people.insert({firstName: "test3"})
+          .then (@result, @driver_result) => cb()
+          .catch cb
+      ], done
     it "should return the inserted doc", -> @result.firstName.should.equal "test3"
     it "should return the inserted doc with an _id", -> should.exist @result._id
     it "should return the driver result", -> should.exist @driver_result
@@ -159,8 +155,8 @@ describe "Integration tests", ->
             (cb) -> c.insert {firstName : "test3", home : {address : 'test'}}, cb
             (cb) => people.count {firstName : /^test/}, (err, @total) => cb(err)
           ],done
-
       it "should count total", -> @total.should.equal 3
+
   describe "aggregate", ->
     describe "When aggregating", ->
       before (done) ->
@@ -178,26 +174,5 @@ describe "Integration tests", ->
               {$group: {_id: 1, total: {$sum: 1}}}
             ], (err, @results) => cb(err)
           ],done
-
-      it "should count results", -> @results[0].total.should.eql 3
-    describe "When aggregating with a cursor", ->
-      before (done) ->
-        #native reset
-        shared.open (err,db) =>
-          done err if err?
-          c = db.collection("people")
-          async.series [
-            (cb) -> c.remove {}, cb
-            (cb) -> c.insert {firstName : "test1", home : {address : 'test'}}, cb
-            (cb) -> c.insert {firstName : "test2", home : {address : 'test'}}, cb
-            (cb) -> c.insert {firstName : "test3", home : {address : 'test'}}, cb
-            (cb) => people.aggregate [
-                {$match: {firstName: /^test/}}
-                {$group: {_id: 1, total: {$sum: 1}}}
-              ], {cursor: {}}, (err, cursor) =>
-                cb(err) if err
-                cursor.toArray (err, @results) =>
-                  cb(err)
-          ], done
 
       it "should count results", -> @results[0].total.should.eql 3

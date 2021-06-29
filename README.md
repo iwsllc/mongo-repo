@@ -1,5 +1,5 @@
 #Simple MongoDb Wrapper
-[![Build Status](https://travis-ci.org/IWSLLC/mongo-repo.svg?branch=master)](https://travis-ci.org/IWSLLC/mongo-repo)
+[![Build Status](https://travis-ci.com/IWSLLC/mongo-repo.svg?branch=main)](https://travis-ci.com/IWSLLC/mongo-repo)
 
 This library is only really useful for mapping results to models. I would advise using the native MongoDb driver over a middleware like this.
 

@@ -140,6 +140,7 @@ describe "Integration tests", ->
       it "should find matching record", -> @result.firstName.should.equal "test1"
       it "should include model function", -> (typeof @result.fullName).should.equal "function"
       it "should include sub model function", -> (typeof @result.home.fullAddress).should.equal "function"
+  
   describe "count", ->
     describe "When counting", ->
       before (done) ->
@@ -156,6 +157,7 @@ describe "Integration tests", ->
           ],done
 
       it "should count total", -> @total.should.equal 3
+  
   describe "aggregate", ->
     describe "When aggregating", ->
       before (done) ->

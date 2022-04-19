@@ -1,15 +1,15 @@
-var mongodb = require("mongodb")
-var BaseRecord = require("./model-base")
+const mongodb = require('mongodb')
+const BaseRecord = require('./model-base')
 
 class AddressRecord extends BaseRecord {
   constructor(props) {
     super(props)
     this.initDefaults({
-      address     : null
-      ,city       : null
-      ,state      : null
-      ,postalCode : null
-      ,country    : null
+      address: null,
+      city: null,
+      state: null,
+      postalCode: null,
+      country: null
     })
   }
 

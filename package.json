@@ -1,6 +1,6 @@
 {
   "name": "@iwsio/mongo-repo-node",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "This module is a thin wrapper around mongodb native driver that allows you to easily derive basic collection operations and share a pooled connection in a Node application.",
   "main": "src/index.js",
   "scripts": {

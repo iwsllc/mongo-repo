@@ -1,25 +1,20 @@
-async  = require 'async'
 should = require 'should'
 people = require "../examples/collection-people"
 model  = require "../examples/model-person"
-shared = require("../index").db
+shared = require("../src").db
+asyncJs = require 'async'
 
 describe "Integration tests", ->
   describe "insert", ->
     before (done) ->
       #native reset
       shared.open (err, db) =>
-        done err if err?
-        c = db.collection("people")
-        async.series [
-          (cb) -> c.remove {}, cb
-          (cb) => people.insert {firstName: "test3"}, (err, result, driver_result) =>
-            @result = result
-            @driver_result = driver_result
-            cb err
-        ], done
-    it "should return the inserted doc", -> @result.firstName.should.equal "test3"
-    it "should return the inserted doc with an _id", -> should.exist @result._id
+        return done(err) if err
+        await c = db.collection("people")
+        await c.deleteMany {}
+        people.insert {firstName: "test3"}, (err, @insertedDoc, @driver_result) => done()
+    it "should return the inserted doc", -> @insertedDoc.firstName.should.equal "test3"
+    it "should return the inserted doc with an _id", -> should.exist @insertedDoc._id
     it "should return the driver result", -> should.exist @driver_result
     it "should return the driver result, result", -> @driver_result.result.ok.should.equal 1
 
@@ -29,7 +24,7 @@ describe "Integration tests", ->
       shared.open (err, db) =>
         done err if err?
         c = db.collection("people")
-        async.series [
+        asyncJs.series [
           (cb) -> c.remove {}, cb
           (cb) => people.insert {firstName: "test3"}, (err, result, driver_result) =>
             @result = result
@@ -49,7 +44,7 @@ describe "Integration tests", ->
         shared.open (err,db) =>
           done err if err?
           c = db.collection("people")
-          async.series [
+          asyncJs.series [
             (cb) -> c.remove {}, cb
             (cb) -> c.insert {firstName : "test1"}, cb
             (cb) -> c.insert {firstName : "test2"}, cb
@@ -71,7 +66,7 @@ describe "Integration tests", ->
         shared.open (err,db) =>
           done err if err?
           c = db.collection("people")
-          async.series [
+          asyncJs.series [
             (cb) -> c.remove {}, cb
             (cb) -> c.insert {firstName : "test1"}, cb
             (cb) -> c.insert {firstName : "test2"}, cb
@@ -93,7 +88,7 @@ describe "Integration tests", ->
         shared.open (err,db) =>
           done err if err?
           c = db.collection("people")
-          async.series [
+          asyncJs.series [
             (cb) -> c.remove {}, cb
             (cb) -> c.insert {firstName : "test1", home : {address : 'test'}}, cb
             (cb) -> c.insert {firstName : "test2", home : {address : 'test'}}, cb
@@ -116,7 +111,7 @@ describe "Integration tests", ->
         shared.open (err,db) =>
           done err if err?
           c = db.collection("people")
-          async.series [
+          asyncJs.series [
             (cb) -> c.remove {}, cb
             (cb) -> c.insert {firstName : "test1", home : {address : 'test'}}, cb
             (cb) -> c.insert {firstName : "test2", home : {address : 'test'}}, cb
@@ -136,7 +131,7 @@ describe "Integration tests", ->
         shared.open (err, db) =>
           return done err if err?
           c = db.collection("people")
-          async.series [
+          asyncJs.series [
             (cb) => c.remove {}, cb
             (cb) => people.upsert {firstName : "test1"}, {firstName : "test1", home : {address : 'test'}}, (err, @result) => cb err
           ], done
@@ -145,6 +140,7 @@ describe "Integration tests", ->
       it "should find matching record", -> @result.firstName.should.equal "test1"
       it "should include model function", -> (typeof @result.fullName).should.equal "function"
       it "should include sub model function", -> (typeof @result.home.fullAddress).should.equal "function"
+  
   describe "count", ->
     describe "When counting", ->
       before (done) ->
@@ -152,7 +148,7 @@ describe "Integration tests", ->
         shared.open (err,db) =>
           done err if err?
           c = db.collection("people")
-          async.series [
+          asyncJs.series [
             (cb) -> c.remove {}, cb
             (cb) -> c.insert {firstName : "test1", home : {address : 'test'}}, cb
             (cb) -> c.insert {firstName : "test2", home : {address : 'test'}}, cb
@@ -161,6 +157,7 @@ describe "Integration tests", ->
           ],done
 
       it "should count total", -> @total.should.equal 3
+  
   describe "aggregate", ->
     describe "When aggregating", ->
       before (done) ->
@@ -168,7 +165,7 @@ describe "Integration tests", ->
         shared.open (err,db) =>
           done err if err?
           c = db.collection("people")
-          async.series [
+          asyncJs.series [
             (cb) -> c.remove {}, cb
             (cb) -> c.insert {firstName : "test1", home : {address : 'test'}}, cb
             (cb) -> c.insert {firstName : "test2", home : {address : 'test'}}, cb
@@ -176,7 +173,8 @@ describe "Integration tests", ->
             (cb) => people.aggregate [
               {$match: {firstName: /^test/}}
               {$group: {_id: 1, total: {$sum: 1}}}
-            ], (err, @results) => cb(err)
+            ], (err, @results) =>
+              cb(err)
           ],done
 
       it "should count results", -> @results[0].total.should.eql 3
@@ -186,7 +184,7 @@ describe "Integration tests", ->
         shared.open (err,db) =>
           done err if err?
           c = db.collection("people")
-          async.series [
+          asyncJs.series [
             (cb) -> c.remove {}, cb
             (cb) -> c.insert {firstName : "test1", home : {address : 'test'}}, cb
             (cb) -> c.insert {firstName : "test2", home : {address : 'test'}}, cb

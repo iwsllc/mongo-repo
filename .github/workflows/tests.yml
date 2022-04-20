@@ -1,0 +1,32 @@
+name: Run tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+
+jobs:
+  test-runtime:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10, 12, 14, 16]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+        env:
+          DB_NAME: mongo_repo_${{ matrix.node-version }}
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.7.0
+        with:
+          mongodb-version: 4.4 #we would update this if we update mongodb for prod
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm test

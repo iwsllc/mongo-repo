@@ -1,65 +1,10 @@
-#Simple MongoDb Wrapper
-[![Build Status](https://travis-ci.org/IWSLLC/mongo-repo.svg?branch=master)](https://travis-ci.org/IWSLLC/mongo-repo)
+# Simple MongoDb Wrapper (LEGACY)
+[![Run tests](https://github.com/IWSLLC/mongo-repo/actions/workflows/tests.yml/badge.svg)](https://github.com/IWSLLC/mongo-repo/actions/workflows/tests.yml)
 
+This is a really old, thin wrapper around the native mongoDB driver (originally v2) to support some repository-style use-cases.  The idea was to allow "models" and "collections" to be defined with pre-existing funcionality and those models be instantiated when enumerating a collection result.
 
-I use this utility for some of my own projects. It's a lightweight wrapper for the native mongodb NodeJs driver. The main advantage is the re-use of the common document definition. The find results will create new instances of the existing prototype and then merge the data into the instance.
+This first version will just be a placeholder while we get projects updated to more recent versions of MongoDb Driver.
 
-It's meant to allow you to extend other native hooks you commonly use.
-
-## Get Started
-Extend the base collection in your own collection module. [Full example collection](./examples/collection-people.js)
-
-[Model example](./examples/model-person.js)
-
-```javascript
-class Model {
-  ///...
-}
-
-class PeopleCollection extends BaseCollection {
-  //define collection name and base model type
-  constructor() {
-    super()
-    this.collectionName = "people"
-    this.record = Model
-  }
-
-  //optional helpers
-  findByEmail(email, done) {return this.findOne({email}, done)}
-
-  //optional index setup
-  ensureIndexes(done) {
-    if (typeof done == 'undefined') done = function(err) {if (err) logger.log(err)}
-
-    sharedMongo.open((err, db) => {
-      if (err) return done(err)
-
-      var collection = db.collection(this.collectionName)
-      async.series([
-        (cb) => {collection.ensureIndex({email: 1}, {}, cb)}
-        //more here
-      ],done)
-    })
-  }
-}
-var db = new PeopleCollection()
-db.ensureIndexes() //only run in dev/small dbs. Larger dbs should handle indexes more delicately.
-module.exports = db
-```
-
-## Using collections
-```javascript
-//call once when bootstrapping your app with a connection pool.
-require("../shared-db").init("mongodb://localhost:27017/mongo-repo-test", (err) => {
-  if (err) return console.log(err)
-
-  //use collection instance
-  var people = require("./people")
-  people.findByEmail("test@me.com", function(err, doc) {
-    console.log(doc)
-  })
-})
-```
 
 ## Included Helpers
  - find          - `function({query}, callback)` callback returns array of documents
@@ -72,3 +17,4 @@ require("../shared-db").init("mongodb://localhost:27017/mongo-repo-test", (err) 
  - removeById    - `function(_id, callback)` native passthrough
  - remove        - `function({query}, callback)` native passthrough
  - count         - `function({query}, callback)` native passthrough
+ - aggregate     - `function({query}, callback)` native passthrough

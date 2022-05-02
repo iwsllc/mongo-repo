@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/IWSLLC/mongo-repo",
   "devDependencies": {
-    "mocha": "^5.2.0",
+    "mocha": "^10.0.0",
     "should": "^13.2.3",
     "sinon": "^6.3.5"
   },

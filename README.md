@@ -1,10 +1,9 @@
 #Simple MongoDb Wrapper
 [![Build Status](https://travis-ci.org/IWSLLC/mongo-repo.svg?branch=master)](https://travis-ci.org/IWSLLC/mongo-repo)
 
+## ⚠️ LEGACY! This only exists due to legacy projects still consuming it.
 
-I use this utility for some of my own projects. It's a lightweight wrapper for the native mongodb NodeJs driver. The main advantage is the re-use of the common document definition. The find results will create new instances of the existing prototype and then merge the data into the instance.
-
-It's meant to allow you to extend other native hooks you commonly use.
+I use this utility for some of my own projects. It's a lightweight wrapper for the native mongodb NodeJs driver. The main advantage is the re-use of the common document definition. The find results will create new instances of the existing prototype and then merge the data into the instance. It's meant to allow you to extend other native methods you commonly use.
 
 ## Get Started
 Extend the base collection in your own collection module. [Full example collection](./examples/collection-people.js)

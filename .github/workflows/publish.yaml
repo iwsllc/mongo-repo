@@ -1,0 +1,48 @@
+name: Publish to npmjs.com
+on:
+  push:
+    branches: [ main, legacy ]
+jobs:
+  test-runtime:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10, 12, 14, 16]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+        env:
+          DB_NAME: mongo_repo_${{ matrix.node-version }}
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.7.0
+        with:
+          mongodb-version: 4.4 #we would update this if we update mongodb for prod
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm test
+
+  publish:
+    needs: test-runtime
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      # Setup .npmrc file to publish to npm
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci
+      - run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          npm version minor
+          git push
+          git push --tags
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

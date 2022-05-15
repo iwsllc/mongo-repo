@@ -1,14 +1,11 @@
 name: Run tests
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
 
-
 jobs:
-  test-runtime:
+  run_tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:

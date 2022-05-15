@@ -2,7 +2,7 @@ should = require 'should'
 people = require "../examples/collection-people"
 model  = require "../examples/model-person"
 shared = require("../src").db
-asyncJs = require 'async'
+asyncJs = require './series'
 
 describe "Integration tests", ->
   describe "insert", ->
@@ -53,7 +53,7 @@ describe "Integration tests", ->
               people.findOne {firstName : /^test/}, (err,doc) =>
                 @result = doc
                 cb err
-          ],done
+          ], done
 
       it "should find match", -> should.exist @result
       it "should have first result", -> @result.firstName.should.equal "test1"

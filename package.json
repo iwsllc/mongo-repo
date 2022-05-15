@@ -1,6 +1,6 @@
 {
   "name": "@iwsio/mongo-repo-node",
-  "version": "1.2.0",
+  "version": "3.0.0",
   "description": "This module is a thin wrapper around mongodb native driver that allows you to easily derive basic collection operations and share a pooled connection in a Node application.",
   "main": "src/index.js",
   "scripts": {
@@ -27,13 +27,16 @@
   },
   "homepage": "https://github.com/IWSLLC/mongo-repo",
   "devDependencies": {
-    "async": "^3.2.3",
     "coffeescript": "^2.6.1",
+    "eslint": "^8.15.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-mocha": "^10.0.4",
     "eslint-plugin-promise": "^6.0.0",
     "mocha": "^9.2.2",
     "should": "^13.2.3"
+  },
+  "peerDependencies": {
+    "mongodb": "^3.7.3"
   },
   "dependencies": {
     "lodash": "^4.17.21",

@@ -11,7 +11,10 @@ function legacyGetDb(dbName, done) {
 // NOTE: Legacy API
 exports.close = (done) => {
   closeDb()
-    .then(() => { done?.() })
+    .then(() => {
+      if (done == null) return
+      done()
+    })
 }
 
 exports.init = (url, done) => {

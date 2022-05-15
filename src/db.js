@@ -21,5 +21,6 @@ exports.getDb = async function getDb(name) {
 
 exports.closeDb = async function closeDb() {
   debug('Closing MongoDb connection...')
-  await _client?.close()
+  if (_client == null) return
+  await _client.close()
 }

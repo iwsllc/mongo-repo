@@ -1,17 +1,14 @@
 /* eslint-disable new-cap */
 const sharedMongo = require('./shared-db')
 const mongodb = require('mongodb')
-const _ = require('lodash')
+const BaseModel = require('./model')
 
 class BaseCollection {
   constructor() {
     this.collectionName = ''
 
     // set a placeholder
-    this.record = (defaults) => {
-      if (defaults) { _.merge(this, defaults) }
-      return this
-    }
+    this.record = BaseModel // default
   }
 
   new(defaults) {

@@ -27,6 +27,9 @@
   },
   "homepage": "https://github.com/IWSLLC/mongo-repo",
   "devDependencies": {
+    "@types/chai": "^4.3.1",
+    "@types/mocha": "^9.1.1",
+    "chai": "^4.3.6",
     "coffeescript": "^2.6.1",
     "eslint": "^8.15.0",
     "eslint-plugin-import": "^2.26.0",

@@ -1,5 +1,4 @@
-const mongodb = require('mongodb')
-const BaseRecord = require('./model-base')
+const BaseRecord = require('../src/model')
 
 class AddressRecord extends BaseRecord {
   constructor(props) {

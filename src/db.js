@@ -17,6 +17,7 @@ exports.init = async function(uri, options) {
 
 exports.getDb = async function getDb(name) {
   if (_client == null) throw new Error('MongoDb connection not initialized.')
+  if (name == null) return _client.db() // NOTE: explicit on purpose.
   return _client.db(name)
 }
 
